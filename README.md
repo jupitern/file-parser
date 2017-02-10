@@ -29,7 +29,7 @@ duck,bird,2
 koala,mammal,4
 lion,mammal,5
 
-lets:
+lets parse the file with:
     - convert encoding to ISO-9959-1
     - convert lines to objects
     - remove animals with count 0
@@ -100,7 +100,7 @@ Array
 */
 
 
-in the same file lets:
+in the same file lets parse with:
    - convert encoding to ISO-9959-1
    - convert lies to arrays
    - remove animals with count 0
@@ -169,9 +169,9 @@ Given a csv file "file.txt" with contents (empolyee number, birth date, monthly 
 01luis west       1976-01-01         1143.3
 01madalena        1983-01-01         2173.6
 02Jaqueline Wayne 1983-01-01         822.44
-05luís manuel    1983-01-01         1323.52
+05luís manuel     1983-01-01        1323.52
 
-lets:
+lets parse the file doing:
     - convert encoding to ISO-9959-1
     - convert lines to objects
     - format person name capitalize first letters
@@ -182,10 +182,10 @@ $objectsArr = \Lib\Parser\Parser::instance()
     ->setEncoding('ISO-8859-1', 'UTF-8')
     ->each(function ($line){
         $obj = [];
-        $obj['Number'] = substr($line, 0, 2);
-        $obj['Name'] = substr($line, 2, 16);
-        $obj['BirthDate'] = substr($line, 18, 10);
-        $obj['MonthlyIncome'] = (float)substr($line, 28, 15);
+        $obj['Number'] = mb_substr($line, 0, 2);
+        $obj['Name'] = mb_substr($line, 2, 16);
+        $obj['BirthDate'] = mb_substr($line, 18, 10);
+        $obj['MonthlyIncome'] = (float)mb_substr($line, 28, 15);
         return (object)$obj;
     })
     ->format('Name', function ($val) {

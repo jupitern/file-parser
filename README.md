@@ -1,5 +1,5 @@
 
-# jupitern/FileParser
+# jupitern/file-parser
 #### PHP File Parser.
 
 read, filter, parse and format {csv, tsv, dsv, variable-length-delimited} and other txt files
@@ -10,11 +10,11 @@ PHP 5.4 or higher.
 
 ## Installation
 
-Include jupitern/FileParser in your project, by adding it to your composer.json file.
+Include jupitern/file-parser in your project, by adding it to your composer.json file.
 ```javascript
 {
     "require": {
-        "jupitern/FileParser": "1.*"
+        "jupitern/file-parser": "0.1.*"
     }
 }
 ```
@@ -37,7 +37,7 @@ lets parse the file with:
     - group by type
 
 // read a file to array
-$objectsArr = \Lib\Parser\Parser::instance()
+$objectsArr = \Jupitern\FileParser::instance()
     ->setFile("csv.txt", ',')
     ->setEncoding('ISO-8859-1', 'UTF-8')
     ->toObject(['animal', 'type', 'number'])
@@ -106,7 +106,7 @@ in the same file lets parse with:
    - remove animals with count 0
    - group by type
 
-$objectsArr = \Lib\Parser\Parser::instance()
+$objectsArr = \Jupitern\FileParser::instance()
     ->setFile("csv.txt", ',')
     ->setEncoding('ISO-8859-1', 'UTF-8')
     ->filter(function ($line) {
@@ -177,7 +177,7 @@ lets parse the file doing:
     - format person name capitalize first letters
     - group by wage bellow or above 1000
 
-$objectsArr = \Lib\Parser\Parser::instance()
+$objectsArr = \Jupitern\FileParser::instance()
     ->setFile("test.txt")
     ->setEncoding('ISO-8859-1', 'UTF-8')
     ->each(function ($line){
@@ -252,6 +252,6 @@ Array
 
 ## License
 
-jupitern/FileParser is release under the MIT license.
+jupitern/file-parser is release under the MIT license.
 
 You are free to use, modify and distribute this software

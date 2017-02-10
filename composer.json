@@ -1,8 +1,8 @@
 {
-    "name"       : "jupitern/FileParser",
+    "name"       : "jupitern/file-parser",
     "description": "read, filter, parse and format {csv, tsv, dsv, variable-length-delimited} and other txt files",
     "keywords"   : ["file parser", "csv", "dsv", "tsv", "variable-length-delimited"],
-    "homepage"   : "https://github.com/jupitern/FileParser",
+    "homepage"   : "https://github.com/jupitern/file-parser",
     "license"    : "MIT",
     "authors"    : [
         {
@@ -12,8 +12,8 @@
         }
     ],
     "support": {
-        "source": "https://github.com/jupitern/FileParser",
-        "issues": "https://github.com/jupitern/FileParser/issues"
+        "source": "https://github.com/jupitern/file-parser",
+        "issues": "https://github.com/jupitern/file-parser/issues"
     },
     "require"    :{
         "php":">=5.4"

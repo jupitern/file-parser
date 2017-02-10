@@ -1,0 +1,31 @@
+{
+    "name"       : "jupitern/FileParser",
+    "description": "read, filter, parse and format {csv, tsv, dsv, variable-length-delimited} and other txt files",
+    "keywords"   : ["file parser", "csv", "dsv", "tsv", "variable-length-delimited"],
+    "homepage"   : "https://github.com/jupitern/FileParser",
+    "license"    : "MIT",
+    "authors"    : [
+        {
+            "name"    : "Nuno Chaves",
+            "email"   : "nunochaves@sapo.pt",
+            "role"    : "Developer"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/jupitern/FileParser",
+        "issues": "https://github.com/jupitern/FileParser/issues"
+    },
+    "require"    :{
+        "php":">=5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jupitern\\FileParser\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+
+        }
+    }
+}

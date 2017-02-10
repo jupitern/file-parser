@@ -1,6 +1,6 @@
 <?php
 
-namespace Jupitern\FileParser;
+namespace Jupitern\Parser;
 
 /*
  * File Parser
@@ -9,7 +9,7 @@ namespace Jupitern\FileParser;
  * Author: Nuno Chaves <nunochaves@sapo.pt>
  * */
 
-class Parser {
+class FileParser {
 
     private $filePath = null;
     private $objectFields = null;
@@ -147,64 +147,55 @@ class Parser {
     public function parse()
     {
         $lines = [];
-        $file = null;
+        $file = fopen($this->filePath, "r");
 
-        try {
-            $lines = [];
+        while (($line = fgets($file)) !== false) {
 
-            $file = fopen($this->filePath, "r");
-            while (($line = fgets($file)) !== false) {
+            if ($this->delimiter !== null) {
+                $line = explode($this->delimiter, $line);
+                // change encoding
+                if ($this->fromEncoding !== null && $this->toEncoding !== null) {
+                    $line = array_map(function ($val) {
+                        return iconv($this->fromEncoding, $this->toEncoding, $val);
+                    }, $line);
+                }
+            } else {
+                $line = iconv($this->fromEncoding, $this->toEncoding, $line);
+            }
 
-                if ($this->delimiter !== null) {
-                    $line = explode($this->delimiter, $line);
-                    // change encoding
-                    if ($this->fromEncoding !== null && $this->toEncoding !== null) {
-                        $line = array_map(function ($val) {
-                            return iconv($this->fromEncoding, $this->toEncoding, $val);
-                        }, $line);
+            // transform lines to object?
+            if ($this->objectFields !== null) {
+                $line = (object)array_combine($this->objectFields, $line);
+            }
+
+            // execute callable for each line
+            if (is_callable($this->each)) {
+                $func = $this->each;
+                $line = $func($line);
+            }
+
+            // execute callable to filter line
+            if (is_callable($this->filter)) {
+                $func = $this->filter;
+                if (!(boolean)$func($line)) continue;
+            }
+
+            foreach ($this->formatters as $key => $callables) {
+                foreach ($callables as $callable) {
+                    if (is_object($line)) {
+                        $line->{$key} = $callable($line->{$key});
+                    } else {
+                        $line[$key] = $callable($line[$key]);
                     }
-                } else {
-                    $line = iconv($this->fromEncoding, $this->toEncoding, $line);
-                }
-
-                // transform lines to object?
-                if ($this->objectFields !== null) {
-                    $line = (object)array_combine($this->objectFields, $line);
-                }
-
-                // execute callable for each line
-                if (is_callable($this->each)) {
-                    $func = $this->each;
-                    $line = $func($line);
-                }
-
-                // execute callable to filter line
-                if (is_callable($this->filter)) {
-                    $func = $this->filter;
-                    if (!(boolean)$func($line)) continue;
-                }
-
-                foreach ($this->formatters as $key => $callables) {
-                    foreach ($callables as $callable) {
-                        if (is_object($line)) {
-                            $line->{$key} = $callable($line->{$key});
-                        } else {
-                            $line[$key] = $callable($line[$key]);
-                        }
-                    }
-                }
-
-                if (is_callable($this->group)) {
-                    $func = $this->group;
-                    $lines[$func($line)][] = $line;
-                } else {
-                    $lines[] = $line;
                 }
             }
-        } catch (\Exception $e) {
-            throw $e;
-        } finally {
-            if ($file !== null) $file = null;
+
+            if (is_callable($this->group)) {
+                $func = $this->group;
+                $lines[$func($line)][] = $line;
+            } else {
+                $lines[] = $line;
+            }
         }
 
         return $lines;

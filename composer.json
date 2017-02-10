@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Jupitern\\FileParser\\": "src/"
+            "Jupitern\\Parser\\": "src/"
         }
     },
     "autoload-dev": {

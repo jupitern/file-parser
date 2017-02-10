@@ -37,7 +37,7 @@ lets parse the file with:
     - group by type
 
 // read a file to array
-$objectsArr = \Jupitern\FileParser::instance()
+$objectsArr = \Jupitern\Parser\FileParser::instance()
     ->setFile("csv.txt", ',')
     ->setEncoding('ISO-8859-1', 'UTF-8')
     ->toObject(['animal', 'type', 'number'])
@@ -106,7 +106,7 @@ in the same file lets parse with:
    - remove animals with count 0
    - group by type
 
-$objectsArr = \Jupitern\FileParser::instance()
+$objectsArr = \Jupitern\Parser\FileParser::instance()
     ->setFile("csv.txt", ',')
     ->setEncoding('ISO-8859-1', 'UTF-8')
     ->filter(function ($line) {
@@ -177,7 +177,7 @@ lets parse the file doing:
     - format person name capitalize first letters
     - group by wage bellow or above 1000
 
-$objectsArr = \Jupitern\FileParser::instance()
+$objectsArr = \Jupitern\Parser\FileParser::instance()
     ->setFile("test.txt")
     ->setEncoding('ISO-8859-1', 'UTF-8')
     ->each(function ($line){

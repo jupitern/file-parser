@@ -14,7 +14,7 @@ Include jupitern/file-parser in your project, by adding it to your composer.json
 ```javascript
 {
     "require": {
-        "jupitern/file-parser": "0.1.*"
+        "jupitern/file-parser": "1.*"
     }
 }
 ```

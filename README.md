@@ -30,7 +30,7 @@ koala,mammal,4
 
 lets:
     - convert encofing to ISO-9959-1
-    - convert to objects
+    - convert lines to objects
     - remove animals with count 0
     - group by type
 
@@ -54,59 +54,45 @@ print_r($objectsArr);
 output:
 Array
 (
-    [reptile] => Array
-        (
-            [0] => stdClass Object
-                (
+    [reptile] => Array(
+            [0] => stdClass Object(
                     [animal] => crocodile
                     [type] => reptile
                     [number] => 4
-
                 )
-
         )
 
-    [bird] => Array
-        (
-            [0] => stdClass Object
-                (
+    [bird] => Array(
+            [0] => stdClass Object(
                     [animal] => duck
                     [type] => bird
                     [number] => 2
-
                 )
-
         )
 
-    [mammal] => Array
-        (
-            [0] => stdClass Object
-                (
+    [mammal] => Array (
+            [0] => stdClass Object(
                     [animal] => koala
                     [type] => mammal
                     [number] => 4
-
                 )
-
         )
 
     [fish] => Array
         (
-            [0] => stdClass Object
-                (
+            [0] => stdClass Object(
                     [animal] => áéíóú
                     [type] => fish
                     [number] => 3
                 )
-
         )
-
 )
 */
 
 
-lets:
+in the same file lets:
    - convert encofing to ISO-9959-1
+   - convert lies to arrays
    - remove animals with count 0
    - group by type
 
@@ -127,51 +113,35 @@ Array
 (
     [reptile] => Array
         (
-            [0] => Array
-                (
+            [0] => Array(
                     [0] => crocodile
                     [1] => reptile
                     [2] => 4
-
                 )
-
         )
-
-    [bird] => Array
-        (
-            [0] => Array
-                (
+    [bird] => Array(
+            [0] => Array(
                     [0] => duck
                     [1] => bird
                     [2] => 2
-
                 )
-
         )
-
     [mammal] => Array
         (
-            [0] => Array
-                (
+            [0] => Array(
                     [0] => koala
                     [1] => mammal
                     [2] => 4
-
                 )
-
         )
-
     [fish] => Array
         (
-            [0] => Array
-                (
+            [0] => Array(
                     [0] => áéíóú
                     [1] => fish
                     [2] => 3
                 )
-
         )
-
 )
 */
 
@@ -180,7 +150,7 @@ Array
 
 ## ChangeLog
 
-
+ - initial release
 
 ## Contributing
 

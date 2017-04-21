@@ -22,7 +22,7 @@ Include jupitern/file-parser in your project, by adding it to your composer.json
 ## Usage
 ```php
 
-Given a csv file "csv.txt" with contents (animal, category, count):
+Given a csv file "filename.csv" with contents (animal, category, count):
 crocodile,reptile,4
 dolphin,mammal,0
 duck,bird,2
@@ -100,9 +100,9 @@ Array
 */
 
 
-in the same file lets parse with:
+For the same file lets parse with:
    - convert encoding to ISO-9959-1
-   - convert lies to arrays
+   - convert lines to arrays
    - remove animals with count 0
    - group by type
 
@@ -164,7 +164,7 @@ Array
 */
 
 
-Given a csv file "file.txt" with contents (empolyee number, birth date, monthly income):
+Given a dsv file "file.txt" with contents (empolyee number, birth date, monthly income):
 01john doe        1980-01-01          923.5
 01luis west       1976-01-01         1143.3
 01madalena        1983-01-01         2173.6

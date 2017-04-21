@@ -181,6 +181,9 @@ class FileParser {
             }
 
             foreach ($this->formatters as $key => $callables) {
+                if (is_object($line) && !isset($line->{$key}) || is_array($line) && !isset($line[$key])) {
+                    continue;
+                }
                 foreach ($callables as $callable) {
                     if (is_object($line)) {
                         $line->{$key} = $callable($line->{$key});

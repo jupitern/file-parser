@@ -162,7 +162,7 @@ class FileParser {
                 $line = str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
                 // change encoding
                 if ($this->fromEncoding !== null && $this->toEncoding !== null) {
-                    $line = array_map(function ($val) {
+                    $line = array_map(function($val) {
                         return iconv($this->fromEncoding, $this->toEncoding, $val);
                     }, $line);
                 }
@@ -184,7 +184,9 @@ class FileParser {
             // execute callable to filter line
             if (is_callable($this->filter)) {
                 $func = $this->filter;
-                if (!(boolean)$func($line, $lineNumber)) continue;
+                if (!(boolean)$func($line, $lineNumber)) {
+                    continue;
+                }
             }
 
             foreach ($this->formatters as $key => $callables) {

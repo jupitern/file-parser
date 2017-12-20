@@ -20,7 +20,8 @@ class FileParser {
     private $fromEncoding = null;
     private $toEncoding = null;
     private $delimiter;
-
+    private $enclosure;
+    private $escape;
 
     /**
      * @return static
@@ -36,12 +37,16 @@ class FileParser {
      *
      * @param $filePath
      * @param string $delimiter
+     * @param string $enclosure
+     * @param string $escape
      * @return $this
      */
-    public function setFile($filePath, $delimiter = null)
+    public function setFile($filePath, $delimiter = null, $enclosure = '"', $escape = '\\')
     {
         $this->filePath = $filePath;
         $this->delimiter = $delimiter;
+        $this->enclosure = $enclosure;
+        $this->escape = $escape;
 
         return $this;
     }
@@ -96,7 +101,7 @@ class FileParser {
 
     /**
      * set a callable to be called on each line to filter lines to retrieve
-     * callable must have one param $line and return a boolean
+     * callable must have params ($line, $number) and return a boolean
      *
      * @param callable $callable
      * @return $this
@@ -147,15 +152,17 @@ class FileParser {
     public function parse()
     {
         $lines = [];
+        $lineNumber = 0;
         $file = fopen($this->filePath, "r");
 
         while (($line = fgets($file)) !== false) {
+            $lineNumber++;
 
             if ($this->delimiter !== null) {
-                $line = explode($this->delimiter, $line);
+                $line = str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
                 // change encoding
                 if ($this->fromEncoding !== null && $this->toEncoding !== null) {
-                    $line = array_map(function ($val) {
+                    $line = array_map(function($val) {
                         return iconv($this->fromEncoding, $this->toEncoding, $val);
                     }, $line);
                 }
@@ -177,13 +184,12 @@ class FileParser {
             // execute callable to filter line
             if (is_callable($this->filter)) {
                 $func = $this->filter;
-                if (!(boolean)$func($line)) continue;
+                if (!(boolean)$func($line, $lineNumber)) {
+                    continue;
+                }
             }
 
             foreach ($this->formatters as $key => $callables) {
-                if (is_object($line) && !isset($line->{$key}) || is_array($line) && !isset($line[$key])) {
-                    continue;
-                }
                 foreach ($callables as $callable) {
                     if (is_object($line)) {
                         $line->{$key} = $callable($line->{$key});

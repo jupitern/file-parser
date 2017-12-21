@@ -23,6 +23,7 @@ Include jupitern/file-parser in your project, by adding it to your composer.json
 ```php
 
 Given a csv file "filename.csv" with contents (animal, category, count):
+animal,type,count
 crocodile,reptile,4
 dolphin,mammal,0
 duck,bird,2
@@ -30,6 +31,7 @@ koala,mammal,4
 lion,mammal,5
 
 lets parse the file with:
+    - ignore the first line
     - convert encoding to ISO-9959-1
     - convert lines to objects
     - remove animals with count 0
@@ -40,9 +42,9 @@ lets parse the file with:
 $objectsArr = \Jupitern\Parser\FileParser::instance()
     ->setFile("csv.txt", ',')
     ->setEncoding('ISO-8859-1', 'UTF-8')
-    ->toObject(['animal', 'type', 'number'])
-    ->filter(function ($line) {
-        return $line->number > 0;
+    ->toObject(['animal', 'type', 'animalCount'])
+    ->filter(function ($line, $lineNumber) {
+        return $lineNumber > 1 && $line->animalCounnt > 0;
     })
     ->format('type', function ($val) {
         return strtoupper($val);

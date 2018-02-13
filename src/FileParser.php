@@ -158,16 +158,13 @@ class FileParser {
         while (($line = fgets($file)) !== false) {
             $lineNumber++;
 
+            // change encoding
+            if ($this->fromEncoding !== null && $this->toEncoding !== null) {
+                $line = iconv($this->fromEncoding, $this->toEncoding, $line);
+            }
+
             if ($this->delimiter !== null) {
                 $line = str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
-                // change encoding
-                if ($this->fromEncoding !== null && $this->toEncoding !== null) {
-                    $line = array_map(function($val) {
-                        return iconv($this->fromEncoding, $this->toEncoding, $val);
-                    }, $line);
-                }
-            } else {
-                $line = iconv($this->fromEncoding, $this->toEncoding, $line);
             }
 
             // transform lines to object?
@@ -178,7 +175,7 @@ class FileParser {
             // execute callable for each line
             if (is_callable($this->each)) {
                 $func = $this->each;
-                $line = $func($line);
+                $line = $func($line, $lineNumber);
             }
 
             // execute callable to filter line

@@ -2,26 +2,22 @@
 
 namespace Jupitern\Parser;
 
-/*
- * File Parser
- * read, filter, parse and format {csv, tsv, dsv, variable-length-delimited} and other txt files
- *
- * Author: Nuno Chaves <nunochaves@sapo.pt>
- * */
-
 class FileParser {
 
-    private $filePath = null;
-    private $objectFields = null;
-    private $formatters = [];
+    private ?string $filePath = null;
+    private string $content = '';
+
+    private ?array $objectFields = null;
+    private array $formatters = [];
+    private string $fromEncoding;
+    private string $toEncoding;
+    private ?string $delimiter = null;
+    private string $enclosure;
+    private string $escape;
+    // callables
     private $filter = null;
     private $each = null;
     private $group = null;
-    private $fromEncoding = null;
-    private $toEncoding = null;
-    private $delimiter;
-    private $enclosure;
-    private $escape;
 
     /**
      * @return static
@@ -35,15 +31,34 @@ class FileParser {
     /**
      * set file to be parsed
      *
-     * @param $filePath
-     * @param string $delimiter
+     * @param string $filePath
+     * @param string|null $delimiter
      * @param string $enclosure
      * @param string $escape
      * @return $this
      */
-    public function setFile($filePath, $delimiter = null, $enclosure = '"', $escape = '\\')
+    public function fromFile(string $filePath, string $delimiter = null, string $enclosure = '"', string $escape = '\\'): self
     {
         $this->filePath = $filePath;
+        $this->delimiter = $delimiter;
+        $this->enclosure = $enclosure;
+        $this->escape = $escape;
+
+        return $this;
+    }
+
+    /**
+     * set file to be parsed
+     *
+     * @param string $content
+     * @param string|null $delimiter
+     * @param string $enclosure
+     * @param string $escape
+     * @return $this
+     */
+    public function fromString(string $content, string $delimiter = null, string $enclosure = '"', string $escape = '\\'): self
+    {
+        $this->content = $content;
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
         $this->escape = $escape;
@@ -58,7 +73,7 @@ class FileParser {
      * @param string $toEncoding
      * @return $this
      */
-    public function setEncoding($fromEncoding = 'UTF-8', $toEncoding = 'UTF-8')
+    public function setEncoding(string $fromEncoding = 'UTF-8', string $toEncoding = 'UTF-8'): self
     {
         $this->fromEncoding = $fromEncoding;
         $this->toEncoding = $toEncoding;
@@ -73,7 +88,7 @@ class FileParser {
      * @param array $objectFields Object field names
      * @return $this
      */
-    public function toObject(array $objectFields = [])
+    public function toObject(array $objectFields = []): self
     {
         $this->objectFields = $objectFields;
 
@@ -85,13 +100,13 @@ class FileParser {
      * format a given line by key using a callable
      * callable must have one param $val and return $val
      *
-     * @param $key
+     * @param string|array $key
      * @param callable $callable
      * @return $this
      */
-    public function format($key, callable $callable)
+    public function format(string|array $key, callable $callable): self
     {
-        foreach ((array)$key as $k) {
+        foreach (is_array($key) ? $key : [$key] as $k) {
             $this->formatters[$k][] = $callable;
         }
 
@@ -106,7 +121,7 @@ class FileParser {
      * @param callable $callable
      * @return $this
      */
-    public function filter(callable $callable)
+    public function filter(callable $callable): self
     {
         $this->filter = $callable;
 
@@ -121,7 +136,7 @@ class FileParser {
      * @param callable $callable
      * @return $this
      */
-    public function each(callable $callable)
+    public function each(callable $callable): self
     {
         $this->each = $callable;
 
@@ -136,7 +151,7 @@ class FileParser {
      * @param callable $callable
      * @return $this
      */
-    public function group(callable $callable)
+    public function group(callable $callable): self
     {
         $this->group = $callable;
 
@@ -149,11 +164,11 @@ class FileParser {
      *
      * @return array
      */
-    public function parse()
+    public function parse(): array
     {
         $lines = [];
         $lineNumber = 0;
-        $file = fopen($this->filePath, "r");
+        $file = $this->filePath ? fopen($this->filePath, "r") : fopen('data://text/plain;base64,' . base64_encode($this->content),'r');;
 
         while (($line = fgets($file)) !== false) {
             $lineNumber++;
@@ -168,7 +183,7 @@ class FileParser {
             }
 
             // transform lines to object?
-            if ($this->objectFields !== null) {
+            if (is_array($line) && $this->objectFields !== null) {
                 $line = (object)array_combine($this->objectFields, $line);
             }
 

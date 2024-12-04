@@ -1,0 +1,16 @@
+﻿.env
+
+# temp files from editors
+*~
+*.bak
+.DS_Store
+Thumbs.db
+.buildpath
+.project
+.settings
+.history
+.phpintel
+*.tmproj
+.idea
+nbproject/
+.composer.lock

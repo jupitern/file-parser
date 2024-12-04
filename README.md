@@ -2,11 +2,11 @@
 # jupitern/file-parser
 #### PHP File Parser.
 
-read, filter, parse and format {csv, tsv, dsv, variable-length-delimited} and other txt files
+read, filter, parse and format {csv, tsv, dsv, variable-length-delimited} from files or strings
 
 ## Requirements
 
-PHP 5.4 or higher.
+PHP 8.0 or higher.
 
 ## Installation
 
@@ -22,6 +22,92 @@ Include jupitern/file-parser in your project, by adding it to your composer.json
 ## Usage
 ```php
 
+Lets parse a csv from a string with contents (animal, category, count):
+animal,type,count
+crocodile,reptile,4
+dolphin,mammal,0
+duck,bird,2
+koala,mammal,4
+lion,mammal,5
+
+lets parse the file with:
+    - ignore the first line
+    - convert encoding from ISO-9959-1 to UTF-8
+    - convert lines to objects
+    - remove animals with count 0
+    - format the animal type to uppercase
+    - group by type
+
+$objectsArr = \Jupitern\Parser\FileParser::instance()
+            ->fromString('animal,type,count
+crocodile,reptile,4
+dolphin,mammal,0
+duck,bird,2
+koala,mammal,4
+lion,mammal,5', ',')
+            ->setEncoding('ISO-8859-1', 'UTF-8')
+            ->toObject(['animal', 'type', 'animalCount'])
+            ->filter(function ($line, $lineNumber) {
+                return $lineNumber > 1 && $line->animalCount > 0;
+            })
+            ->format('type', function ($val) {
+                return strtoupper($val);
+            })
+            ->group(function ($line) {
+                return $line->type;
+            })
+            ->parse();
+
+        echo '<pre>';
+        print_r($objectsArr);
+
+/*
+output:
+Array
+(
+    [REPTILE] => Array
+        (
+            [0] => stdClass Object
+                (
+                    [animal] => crocodile
+                    [type] => REPTILE
+                    [animalCount] => 4
+                )
+
+        )
+
+    [BIRD] => Array
+        (
+            [0] => stdClass Object
+                (
+                    [animal] => duck
+                    [type] => BIRD
+                    [animalCount] => 2
+                )
+
+        )
+
+    [MAMMAL] => Array
+        (
+            [0] => stdClass Object
+                (
+                    [animal] => koala
+                    [type] => MAMMAL
+                    [animalCount] => 4
+                )
+
+            [1] => stdClass Object
+                (
+                    [animal] => lion
+                    [type] => MAMMAL
+                    [animalCount] => 5
+                )
+
+        )
+
+)
+*/
+
 Given a csv file "filename.csv" with contents (animal, category, count):
 animal,type,count
 crocodile,reptile,4
@@ -32,7 +118,7 @@ lion,mammal,5
 
 lets parse the file with:
     - ignore the first line
-    - convert encoding to ISO-9959-1
+    - convert encoding from ISO-9959-1 to UTF-8
     - convert lines to objects
     - remove animals with count 0
     - format the animal type to uppercase
@@ -40,11 +126,11 @@ lets parse the file with:
 
 // read a file to array
 $objectsArr = \Jupitern\Parser\FileParser::instance()
-    ->setFile("csv.txt", ',')
+    ->fromFile('D:\\aaa.txt', ',')
     ->setEncoding('ISO-8859-1', 'UTF-8')
     ->toObject(['animal', 'type', 'animalCount'])
     ->filter(function ($line, $lineNumber) {
-        return $lineNumber > 1 && $line->animalCounnt > 0;
+        return $lineNumber > 1 && $line->animalCount > 0;
     })
     ->format('type', function ($val) {
         return strtoupper($val);
@@ -61,49 +147,52 @@ print_r($objectsArr);
 output:
 Array
 (
-    [REPTILE] => Array(
-            [0] => stdClass Object(
+    [REPTILE] => Array
+        (
+            [0] => stdClass Object
+                (
                     [animal] => crocodile
                     [type] => REPTILE
-                    [number] => 4
+                    [animalCount] => 4
                 )
+
         )
 
-    [BIRD] => Array(
-            [0] => stdClass Object(
+    [BIRD] => Array
+        (
+            [0] => stdClass Object
+                (
                     [animal] => duck
                     [type] => BIRD
-                    [number] => 2
+                    [animalCount] => 2
                 )
+
         )
 
-    [MAMMAL] => Array (
-            [0] => stdClass Object(
+    [MAMMAL] => Array
+        (
+            [0] => stdClass Object
+                (
                     [animal] => koala
                     [type] => MAMMAL
-                    [number] => 4
+                    [animalCount] => 4
                 )
-            [1] => stdClass Object(
+
+            [1] => stdClass Object
+                (
                     [animal] => lion
                     [type] => MAMMAL
-                    [number] => 5
+                    [animalCount] => 5
                 )
+
         )
 
-    [FISH] => Array
-        (
-            [0] => stdClass Object(
-                    [animal] => áéíóú
-                    [type] => FISH
-                    [number] => 3
-                )
-        )
 )
 */
 
 
 For the same file lets parse with:
-   - convert encoding to ISO-9959-1
+   - convert encoding from ISO-9959-1 to UTF-8
    - convert lines to arrays
    - remove animals with count 0
    - group by type
@@ -111,8 +200,8 @@ For the same file lets parse with:
 $objectsArr = \Jupitern\Parser\FileParser::instance()
     ->setFile("csv.txt", ',')
     ->setEncoding('ISO-8859-1', 'UTF-8')
-    ->filter(function ($line) {
-        return $line[2] > 0;
+    ->filter(function ($line, $lineNumber) {
+        return $lineNumber > 1 && $line[2] > 0;
     })
     ->group(function ($line) {
         return $line[1];
@@ -128,40 +217,44 @@ Array
 (
     [reptile] => Array
         (
-            [0] => Array(
+            [0] => Array
+                (
                     [0] => crocodile
                     [1] => reptile
                     [2] => 4
                 )
+
         )
-    [bird] => Array(
-            [0] => Array(
+
+    [bird] => Array
+        (
+            [0] => Array
+                (
                     [0] => duck
                     [1] => bird
                     [2] => 2
                 )
+
         )
+
     [mammal] => Array
         (
-            [0] => Array(
+            [0] => Array
+                (
                     [0] => koala
                     [1] => mammal
                     [2] => 4
                 )
-            [1] => Array(
+
+            [1] => Array
+                (
                     [0] => lion
                     [1] => mammal
                     [2] => 5
                 )
+
         )
-    [fish] => Array
-        (
-            [0] => Array(
-                    [0] => áéíóú
-                    [1] => fish
-                    [2] => 3
-                )
-        )
+
 )
 */
 
@@ -174,7 +267,7 @@ Given a dsv file "file.txt" with contents (empolyee number, birth date, monthly 
 05luís manuel     1983-01-01        1323.52
 
 lets parse the file doing:
-    - convert encoding to ISO-9959-1
+    - convert encoding from ISO-9959-1 to UTF-8
     - convert lines to objects
     - format person name capitalize first letters
     - group by wage bellow or above 1000
@@ -205,40 +298,54 @@ print_r($objectsArr);
 Output:
 Array
 (
-    [bellow 1000] => Array(
-            [0] => stdClass Object(
+    [bellow 1000] => Array
+        (
+            [0] => stdClass Object
+                (
                     [Number] => 01
                     [Name] => John Doe
                     [BirthDate] => 1980-01-01
                     [MonthlyIncome] => 923.5
                 )
-            [1] => stdClass Object(
+
+            [1] => stdClass Object
+                (
                     [Number] => 02
                     [Name] => Jaqueline Wayne
                     [BirthDate] => 1983-01-01
                     [MonthlyIncome] => 822.44
                 )
+
+            [2] => stdClass Object
+                (
+                    [Number] => 05
+                    [Name] => LuÃ­s Manuel
+                    [BirthDate] =>  1983-01-0
+                    [MonthlyIncome] => 1
+                )
+
         )
-    [above 1000] => Array(
-            [0] => stdClass Object(
+
+    [above 1000] => Array
+        (
+            [0] => stdClass Object
+                (
                     [Number] => 01
                     [Name] => Luis West
                     [BirthDate] => 1976-01-01
                     [MonthlyIncome] => 1143.3
                 )
-            [1] => stdClass Object(
+
+            [1] => stdClass Object
+                (
                     [Number] => 01
                     [Name] => Madalena
                     [BirthDate] => 1983-01-01
                     [MonthlyIncome] => 2173.6
                 )
-            [2] => stdClass Object(
-                    [Number] => 05
-                    [Name] => Luís Manuel
-                    [BirthDate] => 1983-01-01
-                    [MonthlyIncome] => 1323.52
-                )
+
         )
+
 )
 */
 
@@ -246,6 +353,13 @@ Array
 
 ## ChangeLog
 
+v1.2.0
+
+- min php version updated to 8.0
+- code refactor for php8
+- allow parse from string or file
+
+v1
  - initial release
 
 ## Contributing

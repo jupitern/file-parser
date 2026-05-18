@@ -11,12 +11,8 @@ PHP 8.0 or higher.
 ## Installation
 
 Include jupitern/file-parser in your project, by adding it to your composer.json file.
-```javascript
-{
-    "require": {
-        "jupitern/file-parser": "1.*"
-    }
-}
+```bash
+composer require jupitern/file-parser
 ```
 
 ## Usage

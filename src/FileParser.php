@@ -2,6 +2,8 @@
 
 namespace Jupitern\Parser;
 
+use \Closure;
+
 class FileParser {
 
     private ?string $filePath = null;
@@ -15,9 +17,9 @@ class FileParser {
     private string $enclosure;
     private string $escape;
     // callables
-    private $filter = null;
-    private $each = null;
-    private $group = null;
+    private ?Closure $filter = null;
+    private ?Closure $each = null;
+    private ?Closure $group = null;
 
     /**
      * @return static
@@ -35,9 +37,9 @@ class FileParser {
      * @param string|null $delimiter
      * @param string $enclosure
      * @param string $escape
-     * @return $this
+     * @return self
      */
-    public function fromFile(string $filePath, string $delimiter = null, string $enclosure = '"', string $escape = '\\'): self
+    public function fromFile(string $filePath, ?string $delimiter = null, string $enclosure = '"', string $escape = '\\'): self
     {
         $this->filePath = $filePath;
         $this->delimiter = $delimiter;
@@ -54,9 +56,9 @@ class FileParser {
      * @param string|null $delimiter
      * @param string $enclosure
      * @param string $escape
-     * @return $this
+     * @return self
      */
-    public function fromString(string $content, string $delimiter = null, string $enclosure = '"', string $escape = '\\'): self
+    public function fromString(string $content, ?string $delimiter = null, string $enclosure = '"', string $escape = '\\'): self
     {
         $this->content = $content;
         $this->delimiter = $delimiter;
@@ -71,7 +73,7 @@ class FileParser {
      *
      * @param string $fromEncoding
      * @param string $toEncoding
-     * @return $this
+     * @return self
      */
     public function setEncoding(string $fromEncoding = 'UTF-8', string $toEncoding = 'UTF-8'): self
     {
@@ -86,7 +88,7 @@ class FileParser {
      * return file as array of objects
      *
      * @param array $objectFields Object field names
-     * @return $this
+     * @return self
      */
     public function toObject(array $objectFields = []): self
     {
@@ -102,7 +104,7 @@ class FileParser {
      *
      * @param string|array $key
      * @param callable $callable
-     * @return $this
+     * @return self
      */
     public function format(string|array $key, callable $callable): self
     {
@@ -119,7 +121,7 @@ class FileParser {
      * callable must have params ($line, $number) and return a boolean
      *
      * @param callable $callable
-     * @return $this
+     * @return self
      */
     public function filter(callable $callable): self
     {
@@ -134,7 +136,7 @@ class FileParser {
      * callable must have one param $line and return $line
      *
      * @param callable $callable
-     * @return $this
+     * @return self
      */
     public function each(callable $callable): self
     {
@@ -149,7 +151,7 @@ class FileParser {
      * callable must have one param $line and return string (grouping key)
      *
      * @param callable $callable
-     * @return $this
+     * @return self
      */
     public function group(callable $callable): self
     {
@@ -168,7 +170,7 @@ class FileParser {
     {
         $lines = [];
         $lineNumber = 0;
-        $file = $this->filePath ? fopen($this->filePath, "r") : fopen('data://text/plain;base64,' . base64_encode($this->content),'r');;
+        $file = $this->filePath ? fopen($this->filePath, "r") : fopen('data://text/plain;base64,' . base64_encode($this->content),'r');
 
         while (($line = fgets($file)) !== false) {
             $lineNumber++;
@@ -196,7 +198,7 @@ class FileParser {
             // execute callable to filter line
             if (is_callable($this->filter)) {
                 $func = $this->filter;
-                if (!(boolean)$func($line, $lineNumber)) {
+                if (!(bool)$func($line, $lineNumber)) {
                     continue;
                 }
             }

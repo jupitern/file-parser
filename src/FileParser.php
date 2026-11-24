@@ -21,6 +21,11 @@ class FileParser {
     private ?Closure $each = null;
     private ?Closure $group = null;
 
+
+    final public function __construct()
+	{
+	}
+
     /**
      * @return static
      */

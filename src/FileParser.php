@@ -20,18 +20,14 @@ class FileParser {
     private ?Closure $filter = null;
     private ?Closure $each = null;
     private ?Closure $group = null;
-
-
-    final public function __construct()
-	{
-	}
+    
 
     /**
      * @return static
      */
     public static function instance()
     {
-        return new static();
+        return new self();
     }
 
 
